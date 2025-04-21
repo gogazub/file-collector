@@ -1,6 +1,8 @@
 #pragma once
 #include<vector>
+#include<unordered_map>
 
+using Chunk = std::vector<uint8_t>;
 class FileCollector
 {
 public:
@@ -10,10 +12,14 @@ public:
     void OnNewChunk(
         uint32_t fileId,
         size_t pos, // позиция в файле
-        std::vector<uint8_t>&& chunk);
+        Chunk& chunk);
 
 
     // Метод получения собранного файла. 
     // Требуется предложить и реализовать оптимальный интерфейс.
     std::vector<uint8_t> GetFile(uint32_t fileId); // Как передавать данные? 
+
+private: 
+    std::unordered_map<uint32_t, std::pair<std::unordered_map<int, Chunk>, size_t>> files;
+
 };
