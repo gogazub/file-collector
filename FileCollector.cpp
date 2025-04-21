@@ -55,19 +55,3 @@ std::vector<uint8_t> FileCollector::GetFile(uint32_t fileId){
 	return file;
 }
 
-
-
-
-/*
-1 2 3 4 
-  2 3 4 5
-    3 4 5 6
-O(NM) -> O(N^2)
-
-1 2 3 4 
-        5 
-		  6
-
-
-
-*/

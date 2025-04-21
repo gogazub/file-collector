@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="FileCollector.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="unit_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FileCollector.h" />
