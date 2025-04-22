@@ -3,7 +3,7 @@
 #include "FileCollector.h"
 #include <vector>
 
-
+    
 
 TEST(FileCollectorTest, CollectFileCreatesFileEntry) {
     FileCollector collector;
@@ -94,6 +94,38 @@ TEST(FileCollectorTest, LargeDataTest) {
 
     // Проверяем, что все данные в файле равны 1 (наш чанк состоит из единиц)
     for (size_t i = 0; i < file.size(); ++i) {
+        EXPECT_EQ(file[i], 1);
+    }
+}
+
+
+TEST(FileCollectorBenchmark, PerformanceTestSingleThreaded) {
+    FileCollector collector;
+
+    const uint32_t fileId = 42;
+    const size_t fileSize = 10'000'000; // 10 MB
+    const size_t chunkSize = 1000;
+
+    collector.CollectFile(fileId, fileSize);
+    Chunk chunk(chunkSize, 1);
+
+    
+
+    for (size_t offset = 0; offset < fileSize; offset += chunkSize) {
+        collector.OnNewChunk(fileId, offset, chunk); // однопоточная вставка
+    }
+
+    
+
+    auto start = std::chrono::high_resolution_clock::now();
+    // Убедимся, что всё корректно
+    const auto file = collector.GetFile(fileId);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    std::cout << "[ BENCHMARK ] GetFile took " << duration_ms << " ms\n";
+    // with no threads pool it took 433 ms
+    EXPECT_EQ(file.size(), fileSize);
+    for (size_t i = 0; i < fileSize; ++i) {
         EXPECT_EQ(file[i], 1);
     }
 }
