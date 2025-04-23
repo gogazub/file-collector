@@ -1,5 +1,5 @@
 #include"IntervalCoverMap.h"
- 
+#include<vector>
 
 std::vector<std::pair<size_t, size_t>> IntervalCoverMap::AddAndGetUncovered(size_t start, size_t end) {
         std::vector<std::pair<size_t, size_t>> uncovered;

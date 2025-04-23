@@ -2,7 +2,7 @@
 #include<unordered_map>
 #include<mutex>
 #include<random>
-#include<algorithm>
+#include <algorithm>
 #include<future>
 #include<iostream> 
 #include<thread>
@@ -27,4 +27,6 @@ public:
     const std::vector<uint8_t>& GetFileReadOnly(uint32_t fileId);
 private: 
     std::map<uint32_t, File> idToFile;    
+    std::mutex idToFileMutex;
+    std::unordered_map<uint32_t, std::mutex> fileMutexes;
 };

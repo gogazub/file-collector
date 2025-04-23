@@ -1,9 +1,19 @@
 #include "FileCollector.h"
 
+std::mutex coutMutex;
 
 void FileCollector::CollectFile(uint32_t fileId, size_t fileSize) {
-	File newFile(fileId, fileSize); // add lock
-	this->idToFile[fileId] = std::move(newFile); // add std::move
+
+	File newFile(fileId, fileSize); 
+	std::lock_guard<std::mutex> idToFileLock(idToFileMutex);
+	if (idToFile.count(fileId)) {
+		std::lock_guard<std::mutex> coutLock (coutMutex);
+		std::cout << "File with id: " << fileId << " already exists" << std::endl;
+		
+	}
+
+	this->idToFile[fileId] = std::move(newFile); 
+	this->fileMutexes[fileId];
 }
 
 
@@ -11,14 +21,23 @@ void FileCollector::CollectFile(uint32_t fileId, size_t fileSize) {
 // Сложность такого алгоритма сборки файла O(N). 
 void FileCollector::OnNewChunk(uint32_t fileId, size_t pos, Chunk& chunk) {
 
-
-	if (!idToFile.count(fileId)) {
-		std::cerr << "No such file with Id:" << fileId << std::endl;
-		return;
+	File* filePtr = nullptr;
+	{
+		std::lock_guard<std::mutex> lock(idToFileMutex);
+		auto it = idToFile.find(fileId);
+		if (it == idToFile.end()) {
+			std::lock_guard<std::mutex> coutLock(coutMutex);
+			std::cout << "No such file with Id:" << fileId << std::endl;
+			return;
+		}
+		filePtr = &it->second;
 	}
 
-	auto& coverMap = idToFile[fileId].GetCoverMap();
-	std::vector<uint8_t>& buffer = idToFile[fileId].GetFile();
+	std::lock_guard<std::mutex> fileLock(fileMutexes[fileId]);
+	auto& coverMap = filePtr->GetCoverMap();
+	auto& buffer = filePtr->GetFile();
+
+
 	auto uncovered = coverMap.AddAndGetUncovered(pos, pos + chunk.size());
 	
 	for (const auto& interval : uncovered) {
@@ -32,10 +51,12 @@ void FileCollector::OnNewChunk(uint32_t fileId, size_t pos, Chunk& chunk) {
 
 
 std::vector<uint8_t>& FileCollector::GetFile(uint32_t fileId) {
+	std::lock_guard<std::mutex> lock(idToFileMutex);
 	return idToFile[fileId].GetFile();
 }
 
 const std::vector<uint8_t>& FileCollector::GetFileReadOnly(uint32_t fileId){
+	std::lock_guard<std::mutex> lock(idToFileMutex);
 	return idToFile[fileId].GetFile();
 	
 }

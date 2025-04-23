@@ -1,9 +1,11 @@
 #pragma once
-
+#include<mutex>
 #include<vector>
 #include"IntervalCoverMap.h"
+
 class File {
 public:
+	
 	File(uint32_t fileId, size_t size);
 	File();
 	std::vector<uint8_t>& GetFile() { return file; }
