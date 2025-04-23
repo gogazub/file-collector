@@ -1,9 +1,7 @@
 #pragma once
 #include <gtest/gtest.h>
-#include "FileCollector.h"
 #include <vector>
-
-    
+#include "Sender.h"
 
 TEST(FileCollectorTest, CollectFileCreatesFileEntry) {
     FileCollector collector;
@@ -13,7 +11,6 @@ TEST(FileCollectorTest, CollectFileCreatesFileEntry) {
 
     collector.CollectFile(fileId, fileSize);
 
-    // Получаем файл и проверяем его размер
     std::vector<uint8_t> file = collector.GetFile(fileId);
     EXPECT_EQ(file.size(), fileSize);
 }
@@ -25,21 +22,17 @@ TEST(FileCollectorTest, OnNewChunkAddsChunksCorrectly) {
     size_t fileSize = 100;
     collector.CollectFile(fileId, fileSize);
 
-    // Создаём чанк
-    Chunk chunk1(10, 1);  // Чанк из 10 элементов, заполненный единицами
-    collector.OnNewChunk(fileId, 0, chunk1); // Добавляем на позицию 0
+    Chunk chunk1(10, 1);  
+    collector.OnNewChunk(fileId, 0, chunk1); 
 
-    // Получаем файл и проверяем его содержимое
     std::vector<uint8_t> file = collector.GetFile(fileId);
     for (size_t i = 0; i < 10; ++i) {
         EXPECT_EQ(file[i], 1);
     }
 
-    // Добавляем второй чанк
     Chunk chunk2(10, 2);
     collector.OnNewChunk(fileId, 10, chunk2);
 
-    // Проверяем, что второй чанк добавился корректно
     file = collector.GetFile(fileId);
     for (size_t i = 10; i < 20; ++i) {
         EXPECT_EQ(file[i], 2);
@@ -54,13 +47,11 @@ TEST(FileCollectorTest, OnNewChunkHandlesDuplicateChunks) {
     collector.CollectFile(fileId, fileSize);
 
     Chunk chunk1(10, 1);
-    collector.OnNewChunk(fileId, 0, chunk1);  // Добавляем чанк
+    collector.OnNewChunk(fileId, 0, chunk1);  
 
-    // Пытаемся добавить тот же чанк ещё раз, он не должен повторяться
     collector.OnNewChunk(fileId, 0, chunk1);
 
     std::vector<uint8_t> file = collector.GetFile(fileId);
-    // Проверяем, что чанк был добавлен только один раз
     for (size_t i = 0; i < 10; ++i) {
         EXPECT_EQ(file[i], 1);
     }
@@ -71,7 +62,6 @@ TEST(FileCollectorTest, GetFileHandlesNonExistentFile) {
 
     uint32_t nonExistentFileId = 999;
     std::vector<uint8_t> file = collector.GetFile(nonExistentFileId);
-    // Проверяем, что возвращён пустой вектор
     EXPECT_TRUE(file.empty());
 }
 
@@ -79,53 +69,44 @@ TEST(FileCollectorTest, LargeDataTest) {
     FileCollector collector;
 
     uint32_t fileId = 1;
-    size_t fileSize = 1000000;  // Один миллион байт
+    size_t fileSize = 1000000;
     collector.CollectFile(fileId, fileSize);
 
-    // Добавляем данные в чанк
-    Chunk chunk(1000, 1); // Чанк размером 1000 байт, заполненный единицами
+    Chunk chunk(1000, 1); 
     for (size_t i = 0; i < fileSize / chunk.size(); ++i) {
         collector.OnNewChunk(fileId, i * chunk.size(), chunk);
     }
 
-    // Получаем файл и проверяем его размер
     std::vector<uint8_t> file = collector.GetFile(fileId);
     EXPECT_EQ(file.size(), fileSize);
 
-    // Проверяем, что все данные в файле равны 1 (наш чанк состоит из единиц)
     for (size_t i = 0; i < file.size(); ++i) {
         EXPECT_EQ(file[i], 1);
     }
 }
 
-
 TEST(FileCollectorBenchmark, PerformanceTestSingleThreaded) {
     FileCollector collector;
 
     const uint32_t fileId = 42;
-    const size_t fileSize = 10'000'000; // 10 MB
+    const size_t fileSize = 10'000'000;
     const size_t chunkSize = 1000;
 
     collector.CollectFile(fileId, fileSize);
     Chunk chunk(chunkSize, 1);
 
-    
-
     for (size_t offset = 0; offset < fileSize; offset += chunkSize) {
-        collector.OnNewChunk(fileId, offset, chunk); // однопоточная вставка
+        collector.OnNewChunk(fileId, offset, chunk); 
     }
 
-    
-
     auto start = std::chrono::high_resolution_clock::now();
-    // Убедимся, что всё корректно
     const auto file = collector.GetFile(fileId);
     auto end = std::chrono::high_resolution_clock::now();
     auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::cout << "[ BENCHMARK ] GetFile took " << duration_ms << " ms\n";
-    // with no threads pool it took 433 ms
     EXPECT_EQ(file.size(), fileSize);
     for (size_t i = 0; i < fileSize; ++i) {
         EXPECT_EQ(file[i], 1);
     }
 }
+

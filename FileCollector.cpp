@@ -61,8 +61,17 @@ const std::vector<uint8_t>& FileCollector::GetFileReadOnly(uint32_t fileId){
 	
 }
 
+void FileCollector::Reset() {
+	std::lock_guard<std::mutex> lock(idToFileMutex);
+	idToFile.clear();
+	fileMutexes.clear();
+}
+
 void FileCollector::RemoveFile(uint32_t fileId) {
 	std::lock_guard<std::mutex> lock(idToFileMutex);
-	idToFile.erase(fileId);
-	fileMutexes.erase(fileId);
+	if (idToFile.find(fileId) != idToFile.end()) {
+		idToFile.erase(fileId);
+		fileMutexes.erase(fileId);
+	}
 }
+

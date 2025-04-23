@@ -14,19 +14,17 @@ class FileCollector
 {
 public:
     void CollectFile(uint32_t fileId, size_t fileSize);
-
-    void OnNewChunk(
-        uint32_t fileId,
-        size_t pos, // позиция в файле
-        Chunk& chunk);
     void RemoveFile(uint32_t fileId);
 
-    // Метод получения собранного файла. 
-    // Требуется предложить и реализовать оптимальный интерфейс.
-    std::vector<uint8_t>& GetFile(uint32_t fileId); // Как передавать данные? 
+    void OnNewChunk( uint32_t fileId, size_t pos, Chunk& chunk);
+   
+    std::vector<uint8_t>& GetFile(uint32_t fileId);
     const std::vector<uint8_t>& GetFileReadOnly(uint32_t fileId);
-private: 
-    std::map<uint32_t, File> idToFile;    
+    void Reset();
+
     std::mutex idToFileMutex;
+
+private: 
+    std::map<uint32_t, File> idToFile;
     std::unordered_map<uint32_t, std::mutex> fileMutexes;
 };
