@@ -1,6 +1,7 @@
 #pragma once
 #include<vector>
 #include<map>
+#include <utility>
 class IntervalCoverMap {
 public:
     // Добавляет новый интервал [start, end) и возвращает вектор непокрытых подотрезков

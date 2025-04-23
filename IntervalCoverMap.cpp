@@ -1,6 +1,3 @@
-#include <map>
-#include <vector>
-#include <utility>
 #include"IntervalCoverMap.h"
  
 

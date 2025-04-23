@@ -131,12 +131,14 @@
     <ClCompile Include="FileCollector.cpp" />
     <ClCompile Include="IntervalCoverMap.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Sender.cpp" />
     <ClCompile Include="unit_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="File.h" />
     <ClInclude Include="FileCollector.h" />
     <ClInclude Include="IntervalCoverMap.h" />
+    <ClInclude Include="Sender.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
