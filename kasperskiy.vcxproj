@@ -127,12 +127,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="File.cpp" />
     <ClCompile Include="FileCollector.cpp" />
+    <ClCompile Include="IntervalCoverMap.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="unit_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="File.h" />
     <ClInclude Include="FileCollector.h" />
+    <ClInclude Include="IntervalCoverMap.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
