@@ -19,7 +19,7 @@ public:
         uint32_t fileId,
         size_t pos, // позиция в файле
         Chunk& chunk);
-
+    void RemoveFile(uint32_t fileId);
 
     // Метод получения собранного файла. 
     // Требуется предложить и реализовать оптимальный интерфейс.

@@ -9,7 +9,7 @@ void FileCollector::CollectFile(uint32_t fileId, size_t fileSize) {
 	if (idToFile.count(fileId)) {
 		std::lock_guard<std::mutex> coutLock (coutMutex);
 		std::cout << "File with id: " << fileId << " already exists" << std::endl;
-		
+		return;
 	}
 
 	this->idToFile[fileId] = std::move(newFile); 
@@ -61,4 +61,8 @@ const std::vector<uint8_t>& FileCollector::GetFileReadOnly(uint32_t fileId){
 	
 }
 
-
+void FileCollector::RemoveFile(uint32_t fileId) {
+	std::lock_guard<std::mutex> lock(idToFileMutex);
+	idToFile.erase(fileId);
+	fileMutexes.erase(fileId);
+}

@@ -26,11 +26,16 @@ int main(int argc, char **argv) {
 	
 	//testing::InitGoogleTest(&argc, argv);
 	//return RUN_ALL_TESTS();
-	for (int i = 0; i < 10; ++i) {
+	/*for (int i = 0; i < 10; ++i) {
 
 		RunFileSendingBenchmark();
 		std::cout << std::endl;
-	}
+	}*/
+
+	Sender sender;
+	std::vector<uint8_t> testFile(2000000, 1); // Пример файла
+	sender.Benchmark(1, testFile, 1000);
+	
 	return 0;
 
 }
